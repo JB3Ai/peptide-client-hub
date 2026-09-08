@@ -1,42 +1,68 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import { useMemo, useState } from "react";
+import { ArrowRight, BarChart3, Beaker, BookOpen, Boxes, BriefcaseBusiness, Calculator, ChevronRight, ClipboardCheck, Database, Layers3, LockKeyhole, Menu, Palette, Send, ShieldCheck, Truck, X } from "lucide-react";
 
-
-function Router() {
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+type Module = { id: string; section: string; title: string; description: string; status: string; icon: typeof BookOpen; accent: string; bullets: string[] };
+type VaultDocument = { id: string; name: string; type: string; room: string; size: string; updated: string };
+type Activity = { opened?: string; downloaded?: string };
+const modules: Module[] = [
+  { id: "business", section: "01", title: "Business plan", description: "The strategic spine: proposition, audience, offer, operating model, and the decisions that make the venture credible.", status: "In progress", icon: BriefcaseBusiness, accent: "brass", bullets: ["North-star proposition and operating model", "Audience segments and priority geographies", "Decision log for open assumptions"] },
+  { id: "marketing", section: "02", title: "Marketing plan", description: "A practical route from education to qualified demand across paid, owned, social, search, and partner channels.", status: "Mapped", icon: BarChart3, accent: "coral", bullets: ["90-day launch action workbook", "TikTok and Instagram education blueprint", "Copy hooks, content pillars, and CTA system"] },
+  { id: "procurement", section: "03", title: "Procurement & imports", description: "Supplier qualification, imports, documentation, and route controls for a defensible product pipeline.", status: "Evidence room", icon: ShieldCheck, accent: "emerald", bullets: ["Asian manufacturer qualification tracker", "Due diligence evidence pack and source register", "RFI, audit, and hold / exclude decisions"] },
+  { id: "transport", section: "04", title: "Transport & logistics", description: "Cold-chain and last-mile controls that make delivery part of the customer promise, not an afterthought.", status: "Control plan", icon: Truck, accent: "blue", bullets: ["2–8°C handoff and route pilot", "Temperature logging and exception ownership", "Stock, fulfilment, and arrival checks"] },
+  { id: "catalogue", section: "05", title: "Product catalogue", description: "A living product library for categories, format, proof load, market fit, and the questions each product must answer.", status: "4 live lanes", icon: Boxes, accent: "brass", bullets: ["Recovery / daily ritual", "Performance / protocol", "Longevity / premium"] },
+  { id: "research", section: "06", title: "Product research", description: "Scientific data, market trends, demand assessment, keyword signals, and the provenance behind each recommendation.", status: "Source linked", icon: Beaker, accent: "emerald", bullets: ["Global top 25 trends and product news", "South Africa demand assessment", "Research source log and methodology"] },
+  { id: "brand", section: "07", title: "Brand studio", description: "Names, logos, typeface, color systems, packaging cues, and live identity territories for Georgie to compare.", status: "5 territories", icon: Palette, accent: "coral", bullets: ["Quiet Lab, Signal House, Modern Apothecary", "Future Classic and Black Label", "Packaging and label direction boards"] },
+  { id: "digital", section: "08", title: "Website ideas", description: "The experience architecture: education before conversion, proof within reach, and capture at the moment of intent.", status: "Concept room", icon: Layers3, accent: "blue", bullets: ["Annotated wireframes and website routes", "FAQ and question-led education", "CRM capture and next-action routing"] },
+  { id: "finance", section: "09", title: "Financial model", description: "Budget, funding requirements, launch scenarios, demand ranges, and the financial questions to pressure-test next.", status: "Scenario ready", icon: Calculator, accent: "brass", bullets: ["Minimum, pilot, and scale envelopes", "Six-month budget forecast", "Funding gates and unit economics"] },
+  { id: "vault", section: "10", title: "Data vault", description: "A controlled index of working files, evidence, references, and decisions so the bible stays auditable as it grows.", status: "Protected", icon: Database, accent: "emerald", bullets: ["Source documents and working files", "Research provenance and evidence register", "Questions, answers, and decision history"] },
+  { id: "decisions", section: "11", title: "Questions & decisions", description: "The living record of what Georgie needs to answer, what has been agreed, and what still needs an owner.", status: "3 open", icon: ClipboardCheck, accent: "coral", bullets: ["Questions waiting for a decision", "Decision log with owner and due date", "Answers linked back to source documents"] },
+];
+const quickStats = [["11", "workstreams"], ["44", "reference files"], ["05", "identity territories"], ["01", "structured handoff"]];
+const vaultDocuments: VaultDocument[] = [
+  { id: "supplier-pack", name: "Asian peptide supplier due diligence evidence pack", type: "ZIP / evidence", room: "Procurement & imports", size: "910 KB", updated: "21 Aug 2026" },
+  { id: "cold-chain", name: "Cold-chain and last-mile control standard", type: "DOCX / operations", room: "Transport & logistics", size: "20 KB", updated: "05 Sep 2026" },
+  { id: "six-month-budget", name: "Peptide six-month budget forecast", type: "CSV / finance", room: "Financial model", size: "5 KB", updated: "05 Sep 2026" },
+  { id: "identity-territories", name: "Portfolio identity five design territories", type: "PDF / brand", room: "Brand studio", size: "918 KB", updated: "05 Sep 2026" },
+  { id: "research-log", name: "South Africa peptide research source log", type: "CSV / research", room: "Product research", size: "21 KB", updated: "18 Aug 2026" },
+];
 
 function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
+  const [activeId, setActiveId] = useState("business"); const [query, setQuery] = useState(""); const [mobileOpen, setMobileOpen] = useState(false); const [briefOpen, setBriefOpen] = useState(false); const [briefSent, setBriefSent] = useState(false);
+  const [activity, setActivity] = useState<Record<string, Activity>>(() => { try { return JSON.parse(localStorage.getItem("georgie-bible-activity") ?? "{}"); } catch { return {}; } });
+  const [vaultOpen, setVaultOpen] = useState(false);
+  const [decisionFilter, setDecisionFilter] = useState<"all" | "open" | "resolved">("all");
+  const active = modules.find((module) => module.id === activeId) ?? modules[0];
+  const ActiveIcon = active.icon;
+  const unreadDocuments = vaultDocuments.filter((document) => !activity[document.id]?.opened).length;
+  const decisions = [
+    { id: "q1", question: "Which supplier evidence must be closed before the first RFI?", owner: "Georgie + procurement", status: "open", priority: "High" },
+    { id: "q2", question: "Which identity territory should lead packaging and the website?", owner: "Georgie + brand", status: "open", priority: "Medium" },
+    { id: "q3", question: "What is the launch envelope for the pilot scenario?", owner: "Georgie + finance", status: "resolved", priority: "Resolved" },
+  ];
+  const filteredModules = useMemo(() => { const value = query.trim().toLowerCase(); return value ? modules.filter((module) => `${module.title} ${module.description} ${module.bullets.join(" ")}`.toLowerCase().includes(value)) : modules; }, [query]);
+  function openModule(id: string) { setActiveId(id); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  function markDocument(documentId: string, kind: "opened" | "downloaded") { const next = { ...activity, [documentId]: { ...activity[documentId], [kind]: new Date().toISOString() } }; setActivity(next); localStorage.setItem("georgie-bible-activity", JSON.stringify(next)); }
+  return <div className="hub-shell">
+    <aside className={`hub-sidebar ${mobileOpen ? "is-open" : ""}`}>
+      <div className="brand-lockup"><div className="brand-mark">GB</div><div><strong>PEPTIDE</strong><strong>BIBLE</strong><span>for Georgie</span></div><button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={18} /></button></div>
+      <div className="sidebar-intro"><span className="eyebrow">Client information hub</span><p>One place for every decision between product idea and market launch.</p></div>
+      <nav className="module-nav" aria-label="Bible modules">{modules.map((module) => { const Icon = module.icon; return <button key={module.id} className={`module-link ${activeId === module.id ? "is-active" : ""}`} onClick={() => openModule(module.id)}><span className="module-number">{module.section}</span><Icon size={15} /><span>{module.title}</span>{activeId === module.id && <ChevronRight size={14} className="module-chevron" />}</button>; })}</nav>
+      <button className="vault-callout" onClick={() => setVaultOpen(true)}><LockKeyhole size={15} /><div><strong>Data vault</strong><span>{unreadDocuments} documents not looked at</span></div><b>{unreadDocuments}</b></button><button className="decision-callout" onClick={() => openModule("decisions")}><ClipboardCheck size={15} /><span>Questions &amp; decisions</span><b>3</b></button><div className="sidebar-footer"><span className="live-dot" /> Georgie workspace <small>v1.0 / persistent memory</small></div>
+    </aside>
+    <div className="hub-main">
+      <header className="hub-topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={19} /></button><div className="crumb"><span>GEORGIE</span><ChevronRight size={14} /><strong>Peptide Bible</strong></div><div className="top-actions"><label className="search-field"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the bible" /></label><button className="brief-button" onClick={() => setBriefOpen(true)}><ClipboardCheck size={15} /> Project brief <span>ready</span></button></div></header>
+      <main>
+        <section className="welcome-section"><div className="welcome-copy"><span className="eyebrow brass">Georgie / working room</span><h1>The bible for building a peptide business with fewer unknowns.</h1><p>Navigate the evidence, shape the offer, compare the brand directions, and carry the decisions forward into a brief your team can build from.</p><div className="welcome-actions"><button className="primary-button" onClick={() => openModule("business")}>Start with the business plan <ArrowRight size={16} /></button><button className="quiet-button" onClick={() => setBriefOpen(true)}>Open project brief <ClipboardCheck size={15} /></button></div></div><div className="welcome-panel"><div className="panel-topline"><span>PB / 01</span><span>decision compass</span></div><div className="compass-ring"><div><span>product</span><span>market</span><span>proof</span></div></div><div className="panel-bottom"><strong>Make each launch decision once.</strong><span>Then carry it forward.</span></div></div></section>
+        <section className="stat-strip">{quickStats.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</section>
+        <section className="workspace-section"><div className="section-header"><div><span className="eyebrow">The bible / 10 workstreams</span><h2>Choose a room to enter.</h2></div><p>Each room is a decision layer. Start broad, go deeper when the question needs evidence, and keep the final brief in view.</p></div><div className="room-grid">{filteredModules.map((module) => { const Icon = module.icon; return <button key={module.id} className={`room-card ${activeId === module.id ? "is-selected" : ""}`} onClick={() => openModule(module.id)}><div className="room-card-top"><span>{module.section}</span><span className={`status status-${module.accent}`}>{module.status}</span></div><Icon size={20} className="room-icon" /><h3>{module.title}</h3><p>{module.description}</p><span className="room-open">Open room <ArrowRight size={14} /></span></button>; })}</div>{filteredModules.length === 0 && <div className="empty-state">No bible room matches “{query}”. Try procurement, branding, budget, or research.</div>}</section>
+        {activeId === "vault" && <section className="vault-desk"><div className="desk-heading"><div><span className="eyebrow">10 / persistent document memory</span><h2>Data vault</h2><p>Georgie’s documents stay source-linked and activity-aware. Open a file to mark it as reviewed; download events are recorded separately for the future authenticated backend.</p></div><div className="unread-tile"><strong>{unreadDocuments}</strong><span>not looked at</span></div></div><div className="document-table">{vaultDocuments.map((document) => <div className={`document-row ${activity[document.id]?.opened ? "is-opened" : ""}`} key={document.id}><div className="document-icon"><BookOpen size={16} /></div><div><strong>{document.name}</strong><span>{document.type} · {document.room}</span></div><span className="document-date">{activity[document.id]?.opened ? `Opened ${new Date(activity[document.id]!.opened!).toLocaleDateString()}` : "Not looked at"}</span><button className="document-action" onClick={() => markDocument(document.id, "opened")}>Open</button><button className="document-action secondary" onClick={() => markDocument(document.id, "downloaded")}>Download</button></div>)}</div></section>}
+        {activeId === "decisions" && <section className="decision-desk"><div className="desk-heading"><div><span className="eyebrow">11 / questions &amp; decisions</span><h2>Keep the next answer visible.</h2><p>Questions are not buried in chat or meeting notes. They carry an owner, a status, and a path back to the evidence.</p></div><div className="decision-filter">{(["all", "open", "resolved"] as const).map((filter) => <button className={decisionFilter === filter ? "is-active" : ""} key={filter} onClick={() => setDecisionFilter(filter)}>{filter}</button>)}</div></div><div className="decision-list">{decisions.filter((decision) => decisionFilter === "all" || decision.status === decisionFilter).map((decision) => <div className={`decision-row ${decision.status}`} key={decision.id}><span className="decision-status">{decision.status === "open" ? "Open" : "Resolved"}</span><div><strong>{decision.question}</strong><span>Owner: {decision.owner}</span></div><b>{decision.priority}</b><ArrowRight size={15} /></div>)}</div></section>}
+        <section className={`active-room room-${active.accent}`}><div className="active-room-header"><div><span className="eyebrow">{active.section} / selected workstream</span><h2>{active.title}</h2><p>{active.description}</p></div><div className="active-room-mark"><ActiveIcon size={28} /><span>{active.status}</span></div></div><div className="active-room-body"><div className="room-checklist"><span className="eyebrow">What lives here</span>{active.bullets.map((bullet, index) => <div key={bullet}><span>0{index + 1}</span><strong>{bullet}</strong><ArrowRight size={14} /></div>)}</div><div className="decision-note"><span className="eyebrow">Decision note</span><h3>{active.id === "procurement" ? "Know who can carry the promise." : active.id === "finance" ? "Stress-test the plan before the spend." : active.id === "brand" ? "Choose the lens before you choose the look." : active.id === "vault" ? "Every document should have a visible next state." : active.id === "decisions" ? "Questions become momentum when they have an owner." : "Keep the next useful decision visible."}</h3><p>Georgie’s working files are organized here as a guided sequence, not a document dump. Use the room to compare options, record assumptions, and hand the right question to the next workstream.</p><button className="text-link" onClick={() => setBriefOpen(true)}>Carry this into the project brief <ArrowRight size={15} /></button></div></div></section>
+        <section className="next-move"><div><span className="eyebrow">Recommended next move</span><h2>Close the loop with a structured brief.</h2><p>Capture Georgie’s selected direction, market, budget pressure, product questions, and open requirements in one reviewable handoff.</p></div><button className="primary-button" onClick={() => setBriefOpen(true)}>Build the brief <Send size={16} /></button></section>
+      </main><footer className="hub-footer"><span><span className="footer-mark">GB</span> PEPTIDE BIBLE / GEORGIE</span><span>Strategy · evidence · handoff</span><span>2026 / private workspace</span></footer>
+    </div>
+    {vaultOpen && <div className="modal-backdrop" role="presentation" onClick={() => setVaultOpen(false)}><section className="brief-modal vault-modal" role="dialog" aria-modal="true" aria-labelledby="vault-title" onClick={(event) => event.stopPropagation()}><div className="modal-head"><div><span className="eyebrow">PB / persistent memory</span><h2 id="vault-title">Georgie’s document memory</h2></div><button className="modal-close" onClick={() => setVaultOpen(false)} aria-label="Close"><X size={18} /></button></div><p className="modal-intro">When Georgie logs back in, this activity state is used to show what has been opened, what has been downloaded, and what still needs attention.</p><div className="memory-summary"><strong>{unreadDocuments}</strong><span>documents not looked at yet</span></div><div className="memory-list">{vaultDocuments.slice(0, 4).map((document) => <div key={document.id}><span>{activity[document.id]?.opened ? "Reviewed" : "Unread"}</span><strong>{document.name}</strong><small>{activity[document.id]?.downloaded ? "Downloaded in this session" : "No download recorded"}</small></div>)}</div><button className="primary-button" onClick={() => { setVaultOpen(false); openModule("vault"); }}>Open the full vault <Database size={16} /></button></section></div>}
+    {briefOpen && <div className="modal-backdrop" role="presentation" onClick={() => setBriefOpen(false)}><section className="brief-modal" role="dialog" aria-modal="true" aria-labelledby="brief-title" onClick={(event) => event.stopPropagation()}><div className="modal-head"><div><span className="eyebrow">PB / structured handoff</span><h2 id="brief-title">Project brief for Georgie</h2></div><button className="modal-close" onClick={() => setBriefOpen(false)} aria-label="Close"><X size={18} /></button></div>{!briefSent ? <><p className="modal-intro">This brief will carry the selected workstream and the decisions around it into the team’s next working session.</p><div className="brief-summary"><div><span>Selected room</span><strong>{active.title}</strong></div><div><span>Current status</span><strong>{active.status}</strong></div><div><span>Next owner</span><strong>Project lead</strong></div><div><span>Source</span><strong>Georgie workspace</strong></div></div><label className="modal-label">What should the team resolve next?<textarea rows={4} placeholder="Add the question, constraint, deadline, or non-negotiable that should guide the next session." /></label><button className="primary-button" onClick={() => setBriefSent(true)}>Save brief request <Send size={16} /></button></> : <div className="success-state"><div className="success-mark"><ClipboardCheck size={25} /></div><span className="eyebrow brass">Brief request saved</span><h3>The next useful question is now visible.</h3><p>Georgie’s selected room and working context are ready to be carried into the handoff packet.</p><button className="quiet-button" onClick={() => { setBriefSent(false); setBriefOpen(false); }}>Back to the bible <ArrowRight size={15} /></button></div>}</section></div>}
+  </div>;
 }
-
 export default App;

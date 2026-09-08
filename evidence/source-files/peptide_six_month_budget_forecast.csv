@@ -1,0 +1,46 @@
+record_type,scenario,period,budget_category,amount_zar,ad_spend_zar,clicks,leads,estimated_sales,modeled_revenue_zar,roas,notes
+budget_allocation,minimum_launch,monthly,Google Ads,2500,,,,,,,Monthly minimum launch allocation
+budget_allocation,minimum_launch,monthly,Meta paid,0,,,,,,,Monthly minimum launch allocation
+budget_allocation,minimum_launch,monthly,TikTok paid,0,,,,,,,Monthly minimum launch allocation
+budget_allocation,minimum_launch,monthly,YouTube paid,0,,,,,,,Monthly minimum launch allocation
+budget_allocation,minimum_launch,monthly,creative_tracking_contingency,1000,,,,,,,Monthly minimum launch allocation
+budget_total,minimum_launch,monthly,TOTAL,3500,,,,,,,Total monthly budget
+budget_allocation,recommended_trial_monthly,monthly,Google Ads,3500,,,,,,,Monthly recommended trial monthly allocation
+budget_allocation,recommended_trial_monthly,monthly,Meta paid,0,,,,,,,Monthly recommended trial monthly allocation
+budget_allocation,recommended_trial_monthly,monthly,TikTok paid,0,,,,,,,Monthly recommended trial monthly allocation
+budget_allocation,recommended_trial_monthly,monthly,YouTube paid,0,,,,,,,Monthly recommended trial monthly allocation
+budget_allocation,recommended_trial_monthly,monthly,creative_tracking_contingency,1000,,,,,,,Monthly recommended trial monthly allocation
+budget_total,recommended_trial_monthly,monthly,TOTAL,4500,,,,,,,Total monthly budget
+budget_total,six_month_plan,6 months,ad_spend_total,22000,,,,,,,Six-month paid media spend in the base plan
+budget_total,six_month_plan,6 months,total_with_contingency,28000,,,,,,,Six-month total including modeled creative/tracking contingency
+forecast_month,conservative,1,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_month,conservative,2,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_month,conservative,3,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_month,conservative,4,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_month,conservative,5,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_month,conservative,6,,,2500,125.0,3.8,0.4,675.0,0.27,Modeled scenario; not measured results
+forecast_total,conservative,TOTAL,,,15000,750.0,22.8,2.4,4050.0,0.27,Modeled scenario; not measured results
+forecast_month,base,1,,,2500,178.6,8.9,1.3,2946.43,1.18,Modeled scenario; not measured results
+forecast_month,base,2,,,2500,178.6,8.9,1.3,2946.43,1.18,Modeled scenario; not measured results
+forecast_month,base,3,,,3500,250.0,12.5,1.9,4125.0,1.18,Modeled scenario; not measured results
+forecast_month,base,4,,,3500,250.0,12.5,1.9,4125.0,1.18,Modeled scenario; not measured results
+forecast_month,base,5,,,5000,357.1,17.9,2.7,5892.86,1.18,Modeled scenario; not measured results
+forecast_month,base,6,,,5000,357.1,17.9,2.7,5892.86,1.18,Modeled scenario; not measured results
+forecast_total,base,TOTAL,,,22000,1571.4,78.6,11.8,25928.58,1.18,Modeled scenario; not measured results
+forecast_month,upside,1,,,2500,250.0,17.5,3.5,9100.0,3.64,Modeled scenario; not measured results
+forecast_month,upside,2,,,2500,250.0,17.5,3.5,9100.0,3.64,Modeled scenario; not measured results
+forecast_month,upside,3,,,3500,350.0,24.5,4.9,12740.0,3.64,Modeled scenario; not measured results
+forecast_month,upside,4,,,3500,350.0,24.5,4.9,12740.0,3.64,Modeled scenario; not measured results
+forecast_month,upside,5,,,5000,500.0,35.0,7.0,18200.0,3.64,Modeled scenario; not measured results
+forecast_month,upside,6,,,5000,500.0,35.0,7.0,18200.0,3.64,Modeled scenario; not measured results
+forecast_total,upside,TOTAL,,,22000,2200.0,154.0,30.8,80080.0,3.64,Modeled scenario; not measured results
+assumption,conservative,model-wide,CPC assumption,,,,,,,,20.00 ZAR; Directional planning assumption
+assumption,base,model-wide,CPC assumption,,,,,,,,14.00 ZAR; Directional planning assumption
+assumption,upside,model-wide,CPC assumption,,,,,,,,10.00 ZAR; Directional planning assumption
+assumption,conservative,model-wide,Lead rate,,,,,,,,3.0%; Directional planning assumption
+assumption,base,model-wide,Lead rate,,,,,,,,5.0%; Directional planning assumption
+assumption,upside,model-wide,Lead rate,,,,,,,,7.0%; Directional planning assumption
+assumption,conservative,model-wide,Lead-to-sale rate,,,,,,,,10.0%; Directional planning assumption
+assumption,base,model-wide,Lead-to-sale rate,,,,,,,,15.0%; Directional planning assumption
+assumption,upside,model-wide,Lead-to-sale rate,,,,,,,,20.0%; Directional planning assumption
+assumption,all,model-wide,Average order value,,,,,,,,"1,687.50 ZAR conservative / 2,266.67 ZAR base / 2,600.00 ZAR upside; Recovered model output; validate against actual margin and offer"
