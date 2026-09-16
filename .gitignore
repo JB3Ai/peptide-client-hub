@@ -111,3 +111,10 @@ temp/
 # Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json
 .project-config.json
+
+# Client documents belong in private object storage, never in Git or static builds.
+/vault-local/
+/client/public/vault/
+/evidence/*
+!/evidence/README.md
+
