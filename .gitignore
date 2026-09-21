@@ -112,9 +112,8 @@ temp/
 client/public/__manus__/version.json
 .project-config.json
 
-# Client documents belong in private object storage, never in Git or static builds.
+# Local staging copy of client documents (source for client/public/vault/, not needed once synced).
 /vault-local/
-/client/public/vault/
 /evidence/*
 !/evidence/README.md
 

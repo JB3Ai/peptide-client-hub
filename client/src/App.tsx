@@ -202,13 +202,5 @@ const modules: Module[] = [
   },
 ];
 export default function App() {
-  const vaultBase = import.meta.env.VITE_VAULT_BASE_URL?.trim().replace(
-    /\/$/,
-    ""
-  );
-  const documents = vaultDocuments.map(doc => ({
-    ...doc,
-    url: vaultBase ? `${vaultBase}${doc.url}` : "",
-  }));
-  return <Workspace modules={modules} documents={documents} />;
+  return <Workspace modules={modules} documents={vaultDocuments} />;
 }

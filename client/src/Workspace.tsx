@@ -1,15 +1,22 @@
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  BookOpen,
   ClipboardCheck,
-  Database,
-  Download,
+  Lock,
+  LockOpen,
   Menu,
   Search,
   X,
 } from "lucide-react";
 import type { Module, VaultDocument } from "./App";
+import { useVaultAccess } from "./hooks/useVaultAccess";
+import { useVaultTracker } from "./hooks/useVaultTracker";
+import {
+  VaultDocumentCard,
+  VaultPinGate,
+  VaultPreviewModal,
+} from "./components/VaultParts";
 
 const decisions = [
   {
@@ -34,6 +41,7 @@ const decisions = [
     priority: "Resolved",
   },
 ];
+
 type Brief = { note: string; roomId: string; savedAt: string };
 const briefKey = "georgie-bible-brief-v1";
 function readBrief(): Brief | null {
@@ -80,37 +88,15 @@ function Modal({
       className={`workspace-dialog ${className}`}
       aria-label={title}
       onCancel={onClose}
-      onKeyDown={event => {
-        if (event.key !== "Tab") return;
-        const controls = event.currentTarget.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]'
-        );
-        const first = controls[0];
-        const last = controls[controls.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first?.focus();
-        }
-      }}
       onClick={event => {
         if (event.target !== event.currentTarget) return;
-        const box = event.currentTarget.getBoundingClientRect();
-        if (
-          event.clientX < box.left ||
-          event.clientX > box.right ||
-          event.clientY < box.top ||
-          event.clientY > box.bottom
-        )
-          onClose();
+        onClose();
       }}
     >
       <div className="modal-head">
         <h2>{title}</h2>
         <button className="modal-close" onClick={onClose} aria-label="Close">
-          <X size={22} />
+          <X size={20} />
         </button>
       </div>
       {children}
@@ -125,57 +111,58 @@ export default function Workspace({
   modules: Module[];
   documents: VaultDocument[];
 }) {
-  const [activeId, setActiveId] = useState("business");
-  const [query, setQuery] = useState("");
+  const access = useVaultAccess();
+  const tracker = useVaultTracker();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
   const [savedBrief, setSavedBrief] = useState(readBrief);
   const [note, setNote] = useState(savedBrief?.note ?? "");
-  const [briefRoomId, setBriefRoomId] = useState(
-    savedBrief?.roomId ?? "business"
-  );
+  const [briefRoomId, setBriefRoomId] = useState(savedBrief?.roomId ?? modules[0]?.id);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
-  const roomRef = useRef<HTMLElement>(null);
-  const active = modules.find(room => room.id === activeId) ?? modules[0];
-  const openDecisions = decisions.filter(
-    decision => decision.status === "open"
-  );
-  const availableFiles = documents.filter(doc => doc.url).length;
-  const fileStatus = `${availableFiles} ${availableFiles === 1 ? "file" : "files"} available`;
-  const status = (room: Module) =>
-    room.id === "decisions"
-      ? `${openDecisions.length} open`
-      : room.id === "vault"
-        ? fileStatus
-        : room.status;
-  const filtered = modules.filter(room =>
-    `${room.title} ${room.description} ${room.bullets.join(" ")}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase())
-  );
-  const briefRoom = modules.find(room => room.id === briefRoomId) ?? active;
+
+  const [activeSection, setActiveSection] = useState(modules[0]?.id ?? "");
+  const [previewDoc, setPreviewDoc] = useState<VaultDocument | null>(null);
+  const [vaultQuery, setVaultQuery] = useState("");
+  const [vaultRoom, setVaultRoom] = useState("all");
+  const [decisionFilter, setDecisionFilter] = useState("all");
+
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
-    const viewport = window.matchMedia("(min-width: 781px)");
-    const closeOnDesktop = () => {
-      if (viewport.matches) setMobileOpen(false);
-    };
-    viewport.addEventListener("change", closeOnDesktop);
-    return () => viewport.removeEventListener("change", closeOnDesktop);
-  }, []);
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-35% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    Object.values(sectionRefs.current).forEach(el => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [modules]);
 
-  function openRoom(id: string) {
-    setActiveId(id);
+  function scrollToId(id: string) {
     setMobileOpen(false);
-    requestAnimationFrame(() => {
-      roomRef.current?.focus({ preventScroll: true });
-      roomRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
-    });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  function openVaultRoom(room: string) {
+    setVaultRoom(room);
+    setVaultQuery("");
+    requestAnimationFrame(() => scrollToId("vault"));
+  }
+
+  function handlePreview(doc: VaultDocument) {
+    if (access.authorized === false) return;
+    tracker.markViewed(doc.id);
+    setPreviewDoc(doc);
+  }
+
   function openBrief(useCurrentRoom = false) {
-    if (useCurrentRoom || !savedBrief) setBriefRoomId(activeId);
+    if (useCurrentRoom || !savedBrief) setBriefRoomId(activeSection);
     setNotice("");
     setError("");
     setBriefOpen(true);
@@ -193,73 +180,64 @@ export default function Workspace({
       setError("");
     } catch {
       setNotice("");
-      setError(
-        "This browser could not save the brief. Export a copy to keep your work."
-      );
+      setError("This browser could not save the brief. Export a copy to keep your work.");
     }
   }
   function exportBrief() {
-    const content = `# Project brief for Georgie\n\nWorkstream: ${briefRoom.title}\nStatus: ${status(briefRoom)}\n\n## Question for the team\n\n${note.trim()}\n`;
-    const url = URL.createObjectURL(
-      new Blob([content], { type: "text/markdown;charset=utf-8" })
-    );
+    const briefRoom = modules.find(room => room.id === briefRoomId);
+    const content = `# Project brief for Georgie\n\nWorkstream: ${briefRoom?.title ?? ""}\n\n## Question for the team\n\n${note.trim()}\n`;
+    const url = URL.createObjectURL(new Blob([content], { type: "text/markdown;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `georgie-brief-${briefRoom.id}.md`;
+    link.download = `georgie-brief-${briefRoomId}.md`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  const navigation = (
-    <nav className="module-nav" aria-label="Workstreams">
-      {modules.map(room => {
-        const Icon = room.icon;
-        return (
-          <button
-            key={room.id}
-            className={`module-link ${activeId === room.id ? "is-active" : ""}`}
-            aria-current={activeId === room.id ? "page" : undefined}
-            onClick={() => openRoom(room.id)}
-          >
-            <span className="module-number">{room.section}</span>
-            <Icon size={17} />
-            <span>{room.title}</span>
-            {activeId === room.id && <ArrowRight size={14} />}
-          </button>
-        );
-      })}
-    </nav>
+
+  const openDecisions = decisions.filter(decision => decision.status === "open");
+  const contentModules = modules.filter(m => m.id !== "vault" && m.id !== "decisions");
+  const roomOptions = ["all", ...Array.from(new Set(documents.map(doc => doc.room)))];
+  const filteredDocs = documents.filter(doc => {
+    const matchesRoom = vaultRoom === "all" || doc.room === vaultRoom;
+    const matchesQuery = `${doc.name} ${doc.room} ${doc.type}`
+      .toLowerCase()
+      .includes(vaultQuery.trim().toLowerCase());
+    return matchesRoom && matchesQuery;
+  });
+  const decisionsFiltered = decisions.filter(
+    decision => decisionFilter === "all" || decision.status === decisionFilter
   );
+  const navItems = [...contentModules, { id: "vault", title: "Data vault" }, { id: "decisions", title: "Decisions" }];
 
   return (
-    <div className="hub-shell">
-      <a className="skip-link" href="#selected-room">
-        Skip to workstream
+    <div className="site">
+      <a className="skip-link" href="#hero">
+        Skip to content
       </a>
-      <aside className="hub-sidebar desktop-sidebar">
-        <div className="brand-lockup">
-          <div className="brand-mark">GB</div>
+      <header className="site-header">
+        <button className="brand-lockup" onClick={() => scrollToId("hero")}>
+          <span className="brand-mark">GB</span>
           <div>
-            <strong>PEPTIDE</strong>
-            <strong>BIBLE</strong>
+            <strong>Peptide Bible</strong>
             <span>for Georgie</span>
           </div>
-        </div>
-        <div className="sidebar-intro">
-          <span className="eyebrow">Your working library</span>
-          <p>From evidence to the next decision.</p>
-        </div>
-        {navigation}
-        <button className="vault-callout" onClick={() => openRoom("vault")}>
-          <Database size={18} />
-          <div>
-            <strong>Data vault</strong>
-            <span>{fileStatus}</span>
-          </div>
         </button>
-        <div className="sidebar-footer">Georgie workspace</div>
-      </aside>
-      <div className="hub-main">
-        <header className="hub-topbar">
+        <nav className="site-nav desktop-nav" aria-label="Sections">
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              className={activeSection === item.id ? "is-active" : ""}
+              onClick={() => scrollToId(item.id)}
+            >
+              {item.title}
+            </button>
+          ))}
+        </nav>
+        <div className="header-actions">
+          <button className="vault-pill" onClick={() => scrollToId("vault")}>
+            {access.authorized ? <LockOpen size={15} /> : <Lock size={15} />}
+            Vault
+          </button>
           <button
             className="mobile-menu"
             onClick={() => setMobileOpen(true)}
@@ -268,232 +246,215 @@ export default function Workspace({
           >
             <Menu size={22} />
           </button>
-          <div className="crumb">
-            <span>GEORGIE</span>
-            <strong>Peptide Bible</strong>
+        </div>
+      </header>
+
+      <main>
+        <section id="hero" className="hero" ref={el => { sectionRefs.current.hero = el; }}>
+          <span className="eyebrow">Product · market · proof</span>
+          <h1>Everything for the peptide venture, in one page.</h1>
+          <p>
+            Strategy, evidence, and next decisions for Georgie — scroll through every workstream, then
+            open the vault for the source files behind each one.
+          </p>
+          <div className="hero-actions">
+            <button className="btn btn-primary" onClick={() => scrollToId(contentModules[0]?.id ?? "vault")}>
+              Start with the business plan <ArrowRight size={16} />
+            </button>
+            <button className="btn btn-ghost" onClick={() => scrollToId("vault")}>
+              Open the vault
+            </button>
           </div>
-          <button className="brief-button" onClick={() => openBrief()}>
-            <ClipboardCheck size={17} /> Project brief{" "}
-            <span>{savedBrief ? "saved" : "draft"}</span>
-          </button>
-        </header>
-        <main>
-          <section className="workspace-welcome">
-            <span className="eyebrow">Product / market / proof</span>
-            <h1>A clearer path to launch.</h1>
-            <p>Your evidence, workstreams, and next decisions in one place.</p>
-          </section>
-          <section
-            className="attention-strip"
-            aria-label="Workspace priorities"
-          >
-            <button onClick={() => openRoom("decisions")}>
+          <div className="attention-strip">
+            <button onClick={() => scrollToId("decisions")}>
               <span className="eyebrow">Needs your input</span>
               <strong>
-                {openDecisions.length} open decisions <ArrowRight size={17} />
+                {openDecisions.length} open decisions <ArrowRight size={16} />
               </strong>
               <span>{openDecisions[0]?.question}</span>
             </button>
-            <button onClick={() => openRoom("vault")}>
+            <button onClick={() => scrollToId("vault")}>
               <span className="eyebrow">Available evidence</span>
               <strong>
-                {documents.length} source documents <ArrowRight size={17} />
+                {documents.length} source documents <ArrowRight size={16} />
               </strong>
-              <span>
-                Research, budgets, brand directions, and operating guides.
-              </span>
+              <span>Research, budgets, brand directions, and operating guides.</span>
             </button>
-          </section>
-          <section
-            id="selected-room"
-            className="selected-workstream"
-            ref={roomRef}
-            tabIndex={-1}
-            aria-label={`${active.title} workstream`}
-          >
-            <div className="workstream-heading">
-              <div>
+          </div>
+        </section>
+
+        {contentModules.map(module => {
+          const Icon = module.icon;
+          const roomDocs = documents.filter(doc => doc.room === module.title);
+          return (
+            <motion.section
+              id={module.id}
+              key={module.id}
+              ref={el => { sectionRefs.current[module.id] = el; }}
+              className="workstream-section"
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-15% 0px" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <div className="workstream-heading">
                 <span className="eyebrow">
-                  {active.section} / selected workstream
+                  {module.section} · {module.status}
                 </span>
-                <h2>{active.title}</h2>
+                <h2>
+                  <Icon size={26} /> {module.title}
+                </h2>
+                <p>{module.description}</p>
               </div>
-              <span className="workstream-status">{status(active)}</span>
-            </div>
-            <p className="workstream-description">{active.description}</p>
-            {activeId === "vault" ? (
-              <div className="document-table">
-                <p className="section-note">
-                  Download the original source files. Each entry shows its
-                  format, workstream, and file size.
-                </p>
-                {documents.map(doc => (
-                  <div className="document-row" key={doc.id}>
-                    <BookOpen size={20} />
-                    <div>
-                      <strong>{doc.name}</strong>
-                      <span>
-                        {doc.type} · {doc.room} · {doc.size}
-                      </span>
-                    </div>
-                    {doc.url ? (
-                      <a
-                        className="document-action"
-                        href={doc.url}
-                        download={doc.filename}
-                        aria-label={`Download ${doc.name} (${doc.type})`}
-                      >
-                        <Download size={16} /> Download {doc.type}
-                      </a>
-                    ) : (
-                      <span className="file-unavailable">
-                        Storage setup pending
-                      </span>
-                    )}
-                  </div>
+              <ul className="workstream-outline">
+                {module.bullets.map(bullet => (
+                  <li key={bullet}>{bullet}</li>
                 ))}
-              </div>
-            ) : activeId === "decisions" ? (
-              <>
-                <div className="decision-filter" aria-label="Filter decisions">
-                  {["all", "open", "resolved"].map(value => (
-                    <button
-                      key={value}
-                      className={filter === value ? "is-active" : ""}
-                      aria-pressed={filter === value}
-                      onClick={() => setFilter(value)}
-                    >
-                      {value} (
-                      {
-                        decisions.filter(
-                          decision =>
-                            value === "all" || decision.status === value
-                        ).length
-                      }
-                      )
+              </ul>
+              {roomDocs.length > 0 && (
+                <div className="workstream-files">
+                  <div className="workstream-files-head">
+                    <span>
+                      {roomDocs.length} source {roomDocs.length === 1 ? "file" : "files"}
+                    </span>
+                    <button className="text-link" onClick={() => openVaultRoom(module.title)}>
+                      View in vault <ArrowRight size={15} />
                     </button>
-                  ))}
-                </div>
-                <div className="decision-list">
-                  {decisions
-                    .filter(
-                      decision => filter === "all" || decision.status === filter
-                    )
-                    .map(decision => (
-                      <div
-                        className={`decision-row ${decision.status}`}
-                        key={decision.id}
-                      >
-                        <span className="decision-status">
-                          {decision.status}
+                  </div>
+                  <div className="mini-doc-grid">
+                    {roomDocs.slice(0, 3).map(doc => (
+                      <button key={doc.id} className="mini-doc" onClick={() => openVaultRoom(module.title)}>
+                        <strong>{doc.name}</strong>
+                        <span>
+                          {doc.type} · {doc.size}
                         </span>
-                        <div>
-                          <strong>{decision.question}</strong>
-                          <span>Owner: {decision.owner}</span>
-                        </div>
-                        <b>{decision.priority}</b>
-                      </div>
+                      </button>
                     ))}
+                  </div>
                 </div>
-              </>
-            ) : (
-              <div className="workstream-body">
-                <div>
-                  <h3>Workstream outline</h3>
-                  <ol className="workstream-outline">
-                    {active.bullets.map(bullet => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ol>
-                </div>
-                <div className="working-note">
-                  <span className="eyebrow">Move this forward</span>
-                  <h3>What needs an answer next?</h3>
-                  <p>
-                    Capture the question, constraint, or decision that your team
-                    should resolve for this workstream.
-                  </p>
-                  <button className="text-link" onClick={() => openBrief(true)}>
-                    Add to project brief <ArrowRight size={17} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </section>
-          <section
-            className="workspace-section"
-            aria-label="Workstream directory"
-          >
-            <div className="section-header">
-              <div>
-                <span className="eyebrow">{modules.length} workstreams</span>
-                <h2>Explore the workspace.</h2>
-              </div>
-              <label className="search-field">
-                <Search size={19} />
-                <input
-                  aria-label="Search workstreams"
-                  placeholder="Search workstreams"
-                  value={query}
-                  onChange={event => setQuery(event.target.value)}
-                />
-                {query && (
-                  <button
-                    onClick={() => setQuery("")}
-                    aria-label="Clear search"
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </label>
+              )}
+              <button className="text-link" onClick={() => openBrief(true)}>
+                Add a question about this workstream <ArrowRight size={15} />
+              </button>
+            </motion.section>
+          );
+        })}
+
+        <section id="vault" ref={el => { sectionRefs.current.vault = el; }} className="vault-section">
+          <div className="section-header">
+            <div>
+              <span className="eyebrow">Data vault</span>
+              <h2>Every source file, in one place.</h2>
+              <p>Preview or download the original files behind each workstream.</p>
             </div>
-            <div className="room-directory">
-              {filtered.map(room => (
+            <label className="search-field">
+              <Search size={18} />
+              <input
+                aria-label="Search documents"
+                placeholder="Search documents"
+                value={vaultQuery}
+                onChange={event => setVaultQuery(event.target.value)}
+              />
+              {vaultQuery && (
+                <button onClick={() => setVaultQuery("")} aria-label="Clear search">
+                  <X size={16} />
+                </button>
+              )}
+            </label>
+          </div>
+          <div className="room-filter" role="tablist" aria-label="Filter by workstream">
+            {roomOptions.map(room => (
+              <button
+                key={room}
+                className={vaultRoom === room ? "is-active" : ""}
+                aria-pressed={vaultRoom === room}
+                onClick={() => setVaultRoom(room)}
+              >
+                {room === "all" ? "All rooms" : room}
+              </button>
+            ))}
+          </div>
+          {access.authorized === false && (
+            <VaultPinGate access={access} onUnlocked={() => access.refresh()} />
+          )}
+          <div className="vault-grid">
+            {filteredDocs.map(doc => (
+              <VaultDocumentCard
+                key={doc.id}
+                doc={doc}
+                authorized={access.authorized}
+                tracker={tracker}
+                onPreview={handlePreview}
+              />
+            ))}
+          </div>
+          {filteredDocs.length === 0 && (
+            <p className="empty-state" role="status">
+              No documents match “{vaultQuery}”.
+            </p>
+          )}
+          <p className="vault-tracker-summary">
+            {tracker.viewedCount} previewed · {tracker.downloadedCount} downloaded on this device
+          </p>
+        </section>
+
+        <section id="decisions" ref={el => { sectionRefs.current.decisions = el; }} className="decisions-section">
+          <div className="section-header">
+            <div>
+              <span className="eyebrow">Questions &amp; decisions</span>
+              <h2>What still needs an answer.</h2>
+            </div>
+            <div className="decision-filter" aria-label="Filter decisions">
+              {["all", "open", "resolved"].map(value => (
                 <button
-                  key={room.id}
-                  className={`directory-row ${activeId === room.id ? "is-selected" : ""}`}
-                  aria-pressed={activeId === room.id}
-                  onClick={() => openRoom(room.id)}
+                  key={value}
+                  className={decisionFilter === value ? "is-active" : ""}
+                  aria-pressed={decisionFilter === value}
+                  onClick={() => setDecisionFilter(value)}
                 >
-                  <span className="directory-number">{room.section}</span>
-                  <span>
-                    <strong>{room.title}</strong>
-                    <span>{room.description}</span>
-                  </span>
-                  <ArrowRight size={18} />
+                  {value} ({decisions.filter(d => value === "all" || d.status === value).length})
                 </button>
               ))}
             </div>
-            {filtered.length === 0 && (
-              <p className="empty-state" role="status">
-                No workstreams match “{query}”. Try procurement, brand, finance,
-                or research.
-              </p>
-            )}
-          </section>
-        </main>
-        <footer className="hub-footer">
-          <span>PEPTIDE BIBLE / GEORGIE</span>
-          <span>Strategy · evidence · handoff</span>
-        </footer>
-      </div>
+          </div>
+          <div className="decision-list">
+            {decisionsFiltered.map(decision => (
+              <div className={`decision-row ${decision.status}`} key={decision.id}>
+                <span className="decision-status">{decision.status}</span>
+                <div>
+                  <strong>{decision.question}</strong>
+                  <span>Owner: {decision.owner}</span>
+                </div>
+                <b>{decision.priority}</b>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <span>Peptide Bible / Georgie</span>
+        <button className="text-link" onClick={() => openBrief()}>
+          <ClipboardCheck size={16} /> Project brief <span>{savedBrief ? "saved" : "draft"}</span>
+        </button>
+      </footer>
+
       {mobileOpen && (
-        <Modal
-          title="Workstreams"
-          className="navigation-dialog"
-          onClose={() => setMobileOpen(false)}
-        >
-          {navigation}
+        <Modal title="Sections" className="navigation-dialog" onClose={() => setMobileOpen(false)}>
+          <nav className="module-nav">
+            {navItems.map(item => (
+              <button key={item.id} onClick={() => scrollToId(item.id)}>
+                {item.title}
+              </button>
+            ))}
+          </nav>
         </Modal>
       )}
+
       {briefOpen && (
-        <Modal
-          title="Project brief for Georgie"
-          onClose={() => setBriefOpen(false)}
-        >
+        <Modal title="Project brief for Georgie" onClose={() => setBriefOpen(false)}>
           <p className="modal-intro">
-            Save your working brief on this device, or export a copy to share
-            with your team.
+            Save your working brief on this device, or export a copy to share with your team.
           </p>
           <form
             onSubmit={event => {
@@ -520,46 +481,40 @@ export default function Workspace({
             <label className="modal-label">
               What should the team resolve next?
               <textarea
-                required
                 rows={5}
                 value={note}
-                onChange={event => {
-                  setNote(event.target.value);
-                  setNotice("");
-                  setError("");
-                }}
-                placeholder="Add a question, constraint, deadline, or decision."
+                onChange={event => setNote(event.target.value)}
+                placeholder="Capture the question, constraint, or decision that needs an answer."
               />
             </label>
-            <div className="brief-actions">
-              <button
-                className="primary-button"
-                disabled={!note.trim()}
-                type="submit"
-              >
-                Save brief on this device
+            <div className="modal-actions">
+              <button type="submit" className="btn btn-primary" disabled={!note.trim()}>
+                Save on this device
               </button>
-              <button
-                type="button"
-                className="quiet-button"
-                disabled={!note.trim()}
-                onClick={exportBrief}
-              >
-                <Download size={18} /> Export brief
+              <button type="button" className="btn btn-ghost" onClick={exportBrief} disabled={!note.trim()}>
+                Export as file
               </button>
             </div>
             {notice && (
-              <p className="save-notice" role="status">
+              <p className="modal-notice" role="status">
                 {notice}
               </p>
             )}
             {error && (
-              <p className="save-error" role="alert">
+              <p className="modal-error" role="alert">
                 {error}
               </p>
             )}
           </form>
         </Modal>
+      )}
+
+      {previewDoc && (
+        <VaultPreviewModal
+          doc={previewDoc}
+          onClose={() => setPreviewDoc(null)}
+          onDownload={() => tracker.markDownloaded(previewDoc.id)}
+        />
       )}
     </div>
   );
