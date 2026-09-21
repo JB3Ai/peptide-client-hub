@@ -27,33 +27,6 @@
     "url": "/vault/combined-peptide-supplier-dossiers-6-7-8-9-10.pdf"
   },
   {
-    "id": "George_90_Day_Marketing_Budget_and_Action_Workbook",
-    "name": "90 Day Marketing Budget and Action Workbook",
-    "type": "XLSX",
-    "room": "Marketing plan",
-    "size": "34 KB",
-    "filename": "George_90_Day_Marketing_Budget_and_Action_Workbook.xlsx",
-    "url": "/vault/george-90-day-marketing-budget-and-action-workbook.xlsx"
-  },
-  {
-    "id": "George_Asian_Peptide_Supplier_Due_Diligence_Evidence_Pack",
-    "name": "Asian Peptide Supplier Due Diligence Evidence Pack",
-    "type": "ZIP",
-    "room": "Procurement & imports",
-    "size": "408 KB",
-    "filename": "George_Asian_Peptide_Supplier_Due_Diligence_Evidence_Pack.zip",
-    "url": "/vault/george-asian-peptide-supplier-due-diligence-evidence-pack.zip"
-  },
-  {
-    "id": "George_Asian_Peptide_Supplier_Qualification_Tracker",
-    "name": "Asian Peptide Supplier Qualification Tracker",
-    "type": "XLSX",
-    "room": "Procurement & imports",
-    "size": "125 KB",
-    "filename": "George_Asian_Peptide_Supplier_Qualification_Tracker.xlsx",
-    "url": "/vault/george-asian-peptide-supplier-qualification-tracker.xlsx"
-  },
-  {
     "id": "CDMO_Pricing_Iceberg_Infographic",
     "name": "CDMO Pricing Iceberg Infographic",
     "type": "PNG",
@@ -61,15 +34,6 @@
     "size": "5.5 MB",
     "filename": "CDMO_Pricing_Iceberg_Infographic.png",
     "url": "/vault/cdmo-pricing-iceberg-infographic.png"
-  },
-  {
-    "id": "George_Cold-Chain_and_Last-Mile_Control_Standard",
-    "name": "Cold-Chain and Last-Mile Control Standard",
-    "type": "DOCX",
-    "room": "Transport & logistics",
-    "size": "20 KB",
-    "filename": "George_Cold-Chain_and_Last-Mile_Control_Standard.docx",
-    "url": "/vault/george-cold-chain-and-last-mile-control-standard.docx"
   },
   {
     "id": "Competitive_Pricing_and_Supplier_Landscape_for_the_Top_Five_Therapeutic_Peptide_Categories_—_19_August_2026",
@@ -81,40 +45,49 @@
     "url": "/vault/competitive-pricing-and-supplier-landscape-for-the-top-five-therapeutic-peptide-categories-19-august-2026.pdf"
   },
   {
+    "id": "George_90_Day_Marketing_Budget_and_Action_Workbook",
+    "name": "90 Day Marketing Budget and Action Workbook",
+    "type": "XLSX",
+    "room": "Marketing plan",
+    "size": "34 KB",
+    "filename": "George_90_Day_Marketing_Budget_and_Action_Workbook.xlsx",
+    "url": "/vault/george-90-day-marketing-budget-and-action-workbook.xlsx"
+  },
+  {
+    "id": "George_Asian_Peptide_Supplier_Qualification_Tracker_Report",
+    "name": "Asian Peptide Supplier Qualification Tracker (Report)",
+    "type": "PDF",
+    "room": "Procurement & imports",
+    "size": "882 KB",
+    "filename": "George_Asian_Peptide_Supplier_Qualification_Tracker.pdf",
+    "url": "/vault/george-asian-peptide-supplier-qualification-tracker-report.pdf"
+  },
+  {
+    "id": "George_Asian_Peptide_Supplier_Qualification_Tracker",
+    "name": "Asian Peptide Supplier Qualification Tracker",
+    "type": "XLSX",
+    "room": "Procurement & imports",
+    "size": "125 KB",
+    "filename": "George_Asian_Peptide_Supplier_Qualification_Tracker.xlsx",
+    "url": "/vault/george-asian-peptide-supplier-qualification-tracker.xlsx"
+  },
+  {
+    "id": "George_Cold-Chain_and_Last-Mile_Control_Standard",
+    "name": "Cold-Chain and Last-Mile Control Standard",
+    "type": "PDF",
+    "room": "Transport & logistics",
+    "size": "485 KB",
+    "filename": "George_Cold-Chain_and_Last-Mile_Control_Standard.pdf",
+    "url": "/vault/george-cold-chain-and-last-mile-control-standard.pdf"
+  },
+  {
     "id": "George_CRM,_Analytics_and_WhatsApp_Stack_Setup_Guide",
     "name": "CRM, Analytics and WhatsApp Stack Setup Guide",
-    "type": "DOCX",
-    "room": "Marketing plan",
-    "size": "31 KB",
-    "filename": "George_CRM,_Analytics_and_WhatsApp_Stack_Setup_Guide.docx",
-    "url": "/vault/george-crm-analytics-and-whatsapp-stack-setup-guide.docx"
-  },
-  {
-    "id": "George_CRM,_Analytics_and_WhatsApp_Stack_Setup_Guide (1)",
-    "name": "CRM, Analytics and WhatsApp Stack Setup Guide (1)",
-    "type": "DOCX",
-    "room": "Marketing plan",
-    "size": "31 KB",
-    "filename": "George_CRM,_Analytics_and_WhatsApp_Stack_Setup_Guide (1).docx",
-    "url": "/vault/george-crm-analytics-and-whatsapp-stack-setup-guide-1.docx"
-  },
-  {
-    "id": "Global_Top_25_Peptides_and_Latest_Product_Trends",
-    "name": "Global Top 25 Peptides and Latest Product Trends",
     "type": "PDF",
-    "room": "Product research",
-    "size": "957 KB",
-    "filename": "Global_Top_25_Peptides_and_Latest_Product_Trends.pdf",
-    "url": "/vault/global-top-25-peptides-and-latest-product-trends.pdf"
-  },
-  {
-    "id": "Global_Top_25_Peptides_in_Demand_and_2025–2026_Product_News",
-    "name": "Global Top 25 Peptides in Demand and 2025–2026 Product News",
-    "type": "PDF",
-    "room": "Product research",
-    "size": "306 KB",
-    "filename": "Global_Top_25_Peptides_in_Demand_and_2025–2026_Product_News.pdf",
-    "url": "/vault/global-top-25-peptides-in-demand-and-2025-2026-product-news.pdf"
+    "room": "Marketing plan",
+    "size": "670 KB",
+    "filename": "George_CRM,_Analytics_and_WhatsApp_Stack_Setup_Guide.pdf",
+    "url": "/vault/george-crm-analytics-and-whatsapp-stack-setup-guide.pdf"
   },
   {
     "id": "George_ Lean Marketing Budget — First 30 Days",
@@ -135,13 +108,40 @@
     "url": "/vault/george-operations-control-workbook.xlsx"
   },
   {
+    "id": "Global_Top_25_Peptides_and_Latest_Product_Trends",
+    "name": "Global Top 25 Peptides and Latest Product Trends",
+    "type": "PDF",
+    "room": "Product research",
+    "size": "957 KB",
+    "filename": "Global_Top_25_Peptides_and_Latest_Product_Trends.pdf",
+    "url": "/vault/global-top-25-peptides-and-latest-product-trends.pdf"
+  },
+  {
+    "id": "Global_Top_25_Peptides_in_Demand_and_2025–2026_Product_News",
+    "name": "Global Top 25 Peptides in Demand and 2025–2026 Product News",
+    "type": "PDF",
+    "room": "Product research",
+    "size": "306 KB",
+    "filename": "Global_Top_25_Peptides_in_Demand_and_2025–2026_Product_News.pdf",
+    "url": "/vault/global-top-25-peptides-in-demand-and-2025-2026-product-news.pdf"
+  },
+  {
+    "id": "Main_Document",
+    "name": "Main Document",
+    "type": "PDF",
+    "room": "Business plan",
+    "size": "1.1 MB",
+    "filename": "main_document.pdf",
+    "url": "/vault/main-document.pdf"
+  },
+  {
     "id": "Organic_TikTok_and_Instagram_Strategy_for_South_African_Peptide_Education",
     "name": "Organic TikTok and Instagram Strategy for South African Peptide Education",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Marketing plan",
-    "size": "17 KB",
-    "filename": "Organic_TikTok_and_Instagram_Strategy_for_South_African_Peptide_Education.docx",
-    "url": "/vault/organic-tiktok-and-instagram-strategy-for-south-african-peptide-education.docx"
+    "size": "471 KB",
+    "filename": "Organic_TikTok_and_Instagram_Strategy_for_South_African_Peptide_Education.pdf",
+    "url": "/vault/organic-tiktok-and-instagram-strategy-for-south-african-peptide-education.pdf"
   },
   {
     "id": "peptide_keyword_research_south_africa",
@@ -164,11 +164,11 @@
   {
     "id": "George_Peptide_Venture_Creative_Opportunity_and_Blind-Spot_Audit",
     "name": "Peptide Venture Creative Opportunity and Blind-Spot Audit",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Brand studio",
-    "size": "26 KB",
-    "filename": "George_Peptide_Venture_Creative_Opportunity_and_Blind-Spot_Audit.docx",
-    "url": "/vault/george-peptide-venture-creative-opportunity-and-blind-spot-audit.docx"
+    "size": "479 KB",
+    "filename": "George_Peptide_Venture_Creative_Opportunity_and_Blind-Spot_Audit.pdf",
+    "url": "/vault/george-peptide-venture-creative-opportunity-and-blind-spot-audit.pdf"
   },
   {
     "id": "George_Portfolio_Identity_Five_Design_Territories",
@@ -191,11 +191,11 @@
   {
     "id": "George_Procurement,_Transport,_Logistics_and_Stock_Management",
     "name": "Procurement, Transport, Logistics and Stock Management",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Procurement & imports",
-    "size": "28 KB",
-    "filename": "George_Procurement,_Transport,_Logistics_and_Stock_Management.docx",
-    "url": "/vault/george-procurement-transport-logistics-and-stock-management.docx"
+    "size": "544 KB",
+    "filename": "George_Procurement,_Transport,_Logistics_and_Stock_Management.pdf",
+    "url": "/vault/george-procurement-transport-logistics-and-stock-management.pdf"
   },
   {
     "id": "product catalog draft V1",
@@ -227,11 +227,11 @@
   {
     "id": "South_Africa_Peptide_Demand_Assessment_Using_Public_Real-World_Data",
     "name": "South Africa Peptide Demand Assessment Using Public Real-World Data",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Business plan",
-    "size": "15 KB",
-    "filename": "South_Africa_Peptide_Demand_Assessment_Using_Public_Real-World_Data.docx",
-    "url": "/vault/south-africa-peptide-demand-assessment-using-public-real-world-data.docx"
+    "size": "390 KB",
+    "filename": "South_Africa_Peptide_Demand_Assessment_Using_Public_Real-World_Data.pdf",
+    "url": "/vault/south-africa-peptide-demand-assessment-using-public-real-world-data.pdf"
   },
   {
     "id": "South_Africa_Peptide_Research_Source_Log",
@@ -254,20 +254,11 @@
   {
     "id": "South_African_Peptide_Competitor_Landscape_and_Differentiation_Strategy",
     "name": "South African Peptide Competitor Landscape and Differentiation Strategy",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Business plan",
-    "size": "18 KB",
-    "filename": "South_African_Peptide_Competitor_Landscape_and_Differentiation_Strategy.docx",
-    "url": "/vault/south-african-peptide-competitor-landscape-and-differentiation-strategy.docx"
-  },
-  {
-    "id": "South African Peptide Competitor Landscape and Differentiation Strategy",
-    "name": "South African Peptide Competitor Landscape and Differentiation Strategy",
-    "type": "MD",
-    "room": "Business plan",
-    "size": "17 KB",
-    "filename": "South African Peptide Competitor Landscape and Differentiation Strategy.md",
-    "url": "/vault/south-african-peptide-competitor-landscape-and-differentiation-strategy.md"
+    "size": "549 KB",
+    "filename": "South_African_Peptide_Competitor_Landscape_and_Differentiation_Strategy.pdf",
+    "url": "/vault/south-african-peptide-competitor-landscape-and-differentiation-strategy.pdf"
   },
   {
     "id": "The_MariTide_Blueprint",
@@ -281,20 +272,20 @@
   {
     "id": "UI_UX_Component_and_Color_Specification (1)",
     "name": "UI UX Component and Color Specification (1)",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Website ideas",
-    "size": "26 KB",
-    "filename": "UI_UX_Component_and_Color_Specification (1).docx",
-    "url": "/vault/ui-ux-component-and-color-specification-1.docx"
+    "size": "621 KB",
+    "filename": "UI_UX_Component_and_Color_Specification (1).pdf",
+    "url": "/vault/ui-ux-component-and-color-specification-1.pdf"
   },
   {
     "id": "George_Weeks_1–2_Copywriting_Templates_and_Hooks",
     "name": "Weeks 1–2 Copywriting Templates and Hooks",
-    "type": "DOCX",
+    "type": "PDF",
     "room": "Marketing plan",
-    "size": "23 KB",
-    "filename": "George_Weeks_1–2_Copywriting_Templates_and_Hooks.docx",
-    "url": "/vault/george-weeks-1-2-copywriting-templates-and-hooks.docx"
+    "size": "554 KB",
+    "filename": "George_Weeks_1–2_Copywriting_Templates_and_Hooks.pdf",
+    "url": "/vault/george-weeks-1-2-copywriting-templates-and-hooks.pdf"
   },
   {
     "id": "Peptide_Bible_Supplier_Due_Diligence_and_Client_Hub",
