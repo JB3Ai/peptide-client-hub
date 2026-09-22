@@ -34,6 +34,8 @@ export type VaultDocument = {
   size: string;
   filename: string;
   url: string;
+  /** Present for videos hosted on YouTube instead of a local file; drives the embed + "Watch" link. */
+  youtubeId?: string;
 };
 const modules: Module[] = [
   {

@@ -295,6 +295,7 @@ export default function Workspace({
         {contentModules.map((module, index) => {
           const Icon = module.icon;
           const roomDocs = documents.filter(doc => doc.room === module.title);
+          const videoDocs = roomDocs.filter(doc => doc.youtubeId);
           return (
             <motion.section
               id={module.id}
@@ -333,6 +334,25 @@ export default function Workspace({
                   <p key={i}>{paragraph}</p>
                 ))}
               </div>
+
+              {videoDocs.length > 0 && (
+                <div className="workstream-videos">
+                  {videoDocs.map(doc => (
+                    <div className="workstream-video" key={doc.id}>
+                      <div className="workstream-video-frame">
+                        <iframe
+                          src={`https://www.youtube-nocookie.com/embed/${doc.youtubeId}`}
+                          title={doc.name}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          loading="lazy"
+                        />
+                      </div>
+                      <span className="workstream-video-title">{doc.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <motion.ul
                 className="workstream-outline"

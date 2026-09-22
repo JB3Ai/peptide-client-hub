@@ -1,5 +1,14 @@
 [
   {
+    "id": "Welcome_to_Peptide_Bible",
+    "name": "Welcome to Peptide Bible",
+    "type": "PDF",
+    "room": "Business plan",
+    "size": "1.0 MB",
+    "filename": "WELCOME_TO_PEPTIDE_BIBLE.pdf",
+    "url": "/vault/welcome-to-peptide-bible.pdf"
+  },
+  {
     "id": "Asian_Peptide_Manufacturers_Laboratories_and_Supply_Chain_Due_Diligence",
     "name": "Asian Peptide Manufacturers, Laboratories and Supply Chain Due Diligence",
     "type": "PDF",
@@ -272,11 +281,12 @@
   {
     "id": "The_Rise_of_MariTide",
     "name": "The Rise of MariTide",
-    "type": "MP4",
+    "type": "Video",
     "room": "Product research",
-    "size": "35.3 MB",
+    "size": "YouTube video",
     "filename": "The_Rise_of_MariTide.mp4",
-    "url": "/vault/the-rise-of-maritide.mp4"
+    "url": "https://youtu.be/cxfZKrow8-I",
+    "youtubeId": "cxfZKrow8-I"
   },
   {
     "id": "The_Peptide_Ledger",
@@ -290,11 +300,12 @@
   {
     "id": "The_True_Cost_of_Peptides_South_Africa_Market_Analysis",
     "name": "The True Cost of Peptides: South Africa Market Analysis",
-    "type": "MP4",
+    "type": "Video",
     "room": "Product research",
-    "size": "76.6 MB",
+    "size": "YouTube video",
     "filename": "The_True_Cost_of_Peptides__South_Africa_Market_Analysis.mp4",
-    "url": "/vault/the-true-cost-of-peptides-south-africa-market-analysis.mp4"
+    "url": "https://youtu.be/xvQ6SQCztJo",
+    "youtubeId": "xvQ6SQCztJo"
   },
   {
     "id": "UI_UX_Component_and_Color_Specification (1)",

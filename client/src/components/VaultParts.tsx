@@ -68,6 +68,18 @@ function PreviewBody({ doc }: { doc: VaultDocument }) {
       </div>
     );
   }
+  if (doc.youtubeId) {
+    return (
+      <div className="preview-youtube">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${doc.youtubeId}`}
+          title={doc.name}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
   if (VIDEO_EXTENSIONS.has(ext)) {
     return (
       <div className="preview-video">
@@ -117,9 +129,21 @@ export function VaultPreviewModal({
             </span>
           </div>
           <div className="preview-head-actions">
-            <a className="btn btn-ghost" href={doc.url} download={doc.filename} onClick={onDownload}>
-              <Download size={16} /> Download
-            </a>
+            {doc.youtubeId ? (
+              <a
+                className="btn btn-ghost"
+                href={doc.url}
+                target="_blank"
+                rel="noreferrer"
+                onClick={onDownload}
+              >
+                <Eye size={16} /> Watch on YouTube
+              </a>
+            ) : (
+              <a className="btn btn-ghost" href={doc.url} download={doc.filename} onClick={onDownload}>
+                <Download size={16} /> Download
+              </a>
+            )}
             <button className="modal-close" onClick={onClose} aria-label="Close preview">
               <X size={20} />
             </button>
@@ -289,16 +313,30 @@ export function VaultDocumentCard({
           className="btn btn-primary"
           href={locked ? undefined : doc.url}
           aria-disabled={locked}
-          download={doc.filename}
+          target={doc.youtubeId ? "_blank" : undefined}
+          rel={doc.youtubeId ? "noreferrer" : undefined}
+          download={doc.youtubeId ? undefined : doc.filename}
           onClick={event => {
             if (locked) {
               event.preventDefault();
               return;
             }
+            if (doc.youtubeId) {
+              tracker.markViewed(doc.id);
+              return;
+            }
             tracker.markDownloaded(doc.id);
           }}
         >
-          <Download size={15} /> Download
+          {doc.youtubeId ? (
+            <>
+              <Eye size={15} /> Watch on YouTube
+            </>
+          ) : (
+            <>
+              <Download size={15} /> Download
+            </>
+          )}
         </a>
       </div>
     </motion.div>
