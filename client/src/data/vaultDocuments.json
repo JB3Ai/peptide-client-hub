@@ -265,9 +265,36 @@
     "name": "The MariTide Blueprint",
     "type": "PDF",
     "room": "Product research",
-    "size": "14.9 MB",
+    "size": "8.3 MB",
     "filename": "The_MariTide_Blueprint.pdf",
     "url": "/vault/the-maritide-blueprint.pdf"
+  },
+  {
+    "id": "The_Rise_of_MariTide",
+    "name": "The Rise of MariTide",
+    "type": "MP4",
+    "room": "Product research",
+    "size": "35.3 MB",
+    "filename": "The_Rise_of_MariTide.mp4",
+    "url": "/vault/the-rise-of-maritide.mp4"
+  },
+  {
+    "id": "The_Peptide_Ledger",
+    "name": "The Peptide Ledger",
+    "type": "PDF",
+    "room": "Financial model",
+    "size": "14.0 MB",
+    "filename": "The_Peptide_Ledger.pdf",
+    "url": "/vault/the-peptide-ledger.pdf"
+  },
+  {
+    "id": "The_True_Cost_of_Peptides_South_Africa_Market_Analysis",
+    "name": "The True Cost of Peptides: South Africa Market Analysis",
+    "type": "MP4",
+    "room": "Product research",
+    "size": "76.6 MB",
+    "filename": "The_True_Cost_of_Peptides__South_Africa_Market_Analysis.mp4",
+    "url": "/vault/the-true-cost-of-peptides-south-africa-market-analysis.mp4"
   },
   {
     "id": "UI_UX_Component_and_Color_Specification (1)",

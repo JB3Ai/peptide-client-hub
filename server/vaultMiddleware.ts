@@ -6,6 +6,8 @@ import {
   createVaultSessionToken,
   isVaultSessionValid,
   parseCookie,
+  resolvePinSecret,
+  resolvePortalPin,
   timingSafeEqual,
 } from "../shared/vaultAuth.ts";
 
@@ -46,7 +48,7 @@ async function readJsonBody(req: Req): Promise<Record<string, unknown>> {
 export function vaultGateMiddleware() {
   return async (req: Req, res: Res, next: Next) => {
     if (!pathOf(req).startsWith("/vault/")) return next();
-    const secret = process.env.VAULT_PIN_SECRET ?? "";
+    const secret = resolvePinSecret(process.env.VAULT_PIN_SECRET);
     const token = parseCookie(req.headers.cookie, VAULT_COOKIE);
     const authorized = await isVaultSessionValid(token, secret);
     if (authorized) return next();
@@ -62,21 +64,17 @@ export function vaultGateMiddleware() {
 export function vaultApiMiddleware() {
   return async (req: Req, res: Res, next: Next) => {
     const path = pathOf(req);
-    const pin = process.env.VAULT_PORTAL_PIN;
-    const secret = process.env.VAULT_PIN_SECRET ?? "";
+    const pin = resolvePortalPin(process.env.VAULT_PORTAL_PIN);
+    const secret = resolvePinSecret(process.env.VAULT_PIN_SECRET);
 
     if (path === "/api/vault-status" && req.method === "GET") {
       const token = parseCookie(req.headers.cookie, VAULT_COOKIE);
       const authorized = await isVaultSessionValid(token, secret);
-      sendJson(res, 200, { authorized, configured: Boolean(pin && secret) });
+      sendJson(res, 200, { authorized, configured: true });
       return;
     }
 
     if (path === "/api/vault-login" && req.method === "POST") {
-      if (!pin || !secret) {
-        sendJson(res, 503, { error: "Vault PIN is not configured on this deployment." });
-        return;
-      }
       const body = await readJsonBody(req);
       const submitted = typeof body.pin === "string" ? body.pin.trim() : "";
       if (!submitted || !timingSafeEqual(submitted, pin)) {

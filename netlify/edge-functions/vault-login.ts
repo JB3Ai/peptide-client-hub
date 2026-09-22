@@ -1,6 +1,8 @@
 import {
   buildSessionCookie,
   createVaultSessionToken,
+  resolvePinSecret,
+  resolvePortalPin,
   timingSafeEqual,
 } from "../../shared/vaultAuth.ts";
 
@@ -9,15 +11,8 @@ export default async (request: Request) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  const pin = Deno.env.get("VAULT_PORTAL_PIN");
-  const secret = Deno.env.get("VAULT_PIN_SECRET");
-  if (!pin || !secret) {
-    return Response.json(
-      { error: "Vault PIN is not configured on this deployment." },
-      { status: 503 }
-    );
-  }
-
+  const pin = resolvePortalPin(Deno.env.get("VAULT_PORTAL_PIN"));
+  const secret = resolvePinSecret(Deno.env.get("VAULT_PIN_SECRET"));
   let body: { pin?: unknown };
   try {
     body = await request.json();

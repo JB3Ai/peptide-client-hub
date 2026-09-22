@@ -9,7 +9,26 @@
  */
 
 export const VAULT_COOKIE = "vault_session";
-export const VAULT_SESSION_HOURS = 12;
+// The whole portal (not just document downloads) is gated by this session,
+// so it is kept unlocked for the life of the 30-day preview window rather
+// than expiring every 12 hours.
+export const VAULT_SESSION_HOURS = 24 * 30;
+
+/**
+ * Fallback PIN/secret used when VAULT_PORTAL_PIN / VAULT_PIN_SECRET are not
+ * set in the environment, so the portal works out of the box. Set real env
+ * vars on any deployment that should not use the shared default PIN.
+ */
+export const DEFAULT_PORTAL_PIN = "2323";
+const DEFAULT_PIN_SECRET = "peptide-client-hub-default-pin-secret-2323";
+
+export function resolvePortalPin(envPin: string | undefined | null): string {
+  return envPin && envPin.trim() ? envPin.trim() : DEFAULT_PORTAL_PIN;
+}
+
+export function resolvePinSecret(envSecret: string | undefined | null): string {
+  return envSecret && envSecret.trim() ? envSecret.trim() : DEFAULT_PIN_SECRET;
+}
 
 const encoder = new TextEncoder();
 

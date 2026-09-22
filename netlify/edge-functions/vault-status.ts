@@ -2,13 +2,14 @@ import {
   VAULT_COOKIE,
   isVaultSessionValid,
   parseCookie,
+  resolvePinSecret,
 } from "../../shared/vaultAuth.ts";
 
 export default async (request: Request) => {
-  const secret = Deno.env.get("VAULT_PIN_SECRET") ?? "";
+  const secret = resolvePinSecret(Deno.env.get("VAULT_PIN_SECRET"));
   const token = parseCookie(request.headers.get("cookie"), VAULT_COOKIE);
   const authorized = await isVaultSessionValid(token, secret);
-  const configured = Boolean(Deno.env.get("VAULT_PORTAL_PIN") && secret);
+  const configured = true;
   return Response.json({ authorized, configured });
 };
 

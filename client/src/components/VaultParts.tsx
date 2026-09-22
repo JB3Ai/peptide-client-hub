@@ -8,6 +8,7 @@ import type { useVaultTracker } from "../hooks/useVaultTracker";
 const OFFICE_EXTENSIONS = new Set(["docx", "xlsx", "pptx"]);
 const TEXT_EXTENSIONS = new Set(["md", "csv", "txt"]);
 const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "webp", "gif", "svg"]);
+const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov"]);
 
 function extensionOf(filename: string) {
   return filename.split(".").pop()?.toLowerCase() ?? "";
@@ -64,6 +65,13 @@ function PreviewBody({ doc }: { doc: VaultDocument }) {
     return (
       <div className="preview-audio">
         <audio controls src={doc.url} />
+      </div>
+    );
+  }
+  if (VIDEO_EXTENSIONS.has(ext)) {
+    return (
+      <div className="preview-video">
+        <video controls src={doc.url} />
       </div>
     );
   }
@@ -179,6 +187,61 @@ export function VaultPinGate({
     </div>
   );
 }
+
+/** Full-screen PIN wall shown before any part of the site is revealed. */
+export function SitePinGate({ access }: { access: ReturnType<typeof useVaultAccess> }) {
+  const [pin, setPin] = useState("");
+  return (
+    <div className="site-gate">
+      <motion.div
+        className="site-gate-card"
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+        <div className="site-gate-mark">GB</div>
+        <strong className="site-gate-title">Peptide Bible — private preview</strong>
+        <p className="site-gate-copy">
+          Enter the PIN Georgie’s team was given to open the full site and the document vault.
+        </p>
+        <form
+          className="site-gate-form"
+          onSubmit={async event => {
+            event.preventDefault();
+            const ok = await access.unlock(pin);
+            if (!ok) setPin("");
+          }}
+        >
+          <input
+            type="password"
+            inputMode="numeric"
+            autoFocus
+            placeholder="Enter PIN"
+            value={pin}
+            onChange={event => setPin(event.target.value)}
+            aria-label="Portal PIN"
+          />
+          <button className="btn btn-primary" type="submit" disabled={access.pending || !pin}>
+            {access.pending ? "Checking…" : "Enter"}
+          </button>
+        </form>
+        {access.error && (
+          <p className="pin-gate-error" role="alert">
+            {access.error}
+          </p>
+        )}
+        <p className="site-gate-disclaimer">
+          This portal and every document, image, video, and design inside it are prepared for
+          Georgie by <strong>JB3</strong> and remain the exclusive property of JB3. Nothing here
+          may be copied, redistributed, or reused without JB3’s written permission. This preview
+          portal is made available for <strong>30 days</strong> from launch and access may be
+          withdrawn at any time.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
 
 export function VaultDocumentCard({
   doc,

@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => {
   // Functions read in production. Vite doesn't put unprefixed vars on
   // `process.env` for the config/server layer, so load `.env` explicitly.
   const env = loadEnv(mode, import.meta.dirname, ["VAULT_"]);
-  process.env.VAULT_PORTAL_PIN ??= env.VAULT_PORTAL_PIN;
-  process.env.VAULT_PIN_SECRET ??= env.VAULT_PIN_SECRET;
+  if (env.VAULT_PORTAL_PIN) process.env.VAULT_PORTAL_PIN ??= env.VAULT_PORTAL_PIN;
+  if (env.VAULT_PIN_SECRET) process.env.VAULT_PIN_SECRET ??= env.VAULT_PIN_SECRET;
 
   return {
     plugins: [react(), tailwindcss(), vaultDevMiddleware()],

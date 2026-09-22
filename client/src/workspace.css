@@ -507,6 +507,83 @@ main {
   font-size: 0.85rem;
 }
 
+/* ---------------------------------------------------------------------- */
+/* Full-site PIN wall                                                      */
+/* ---------------------------------------------------------------------- */
+
+.site-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(13, 90, 74, 0.16), transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(180, 134, 58, 0.18), transparent 55%),
+    var(--ivory);
+}
+.site-gate-card {
+  width: min(420px, 100%);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 2.6rem 2.2rem;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.7rem;
+}
+.site-gate-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--emerald), var(--deep-emerald));
+  color: var(--ivory);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+.site-gate-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--deep-emerald);
+}
+.site-gate-copy {
+  color: var(--muted);
+  margin: 0;
+  max-width: 320px;
+}
+.site-gate-form {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+.site-gate-form input {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-body);
+  min-width: 170px;
+  text-align: center;
+  letter-spacing: 0.2em;
+}
+.site-gate-disclaimer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+.site-gate-disclaimer strong {
+  color: var(--ink);
+}
+
 .vault-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -812,6 +889,17 @@ main {
   padding: 2.5rem;
   display: grid;
   place-items: center;
+}
+.preview-video {
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+}
+.preview-video video {
+  width: 100%;
+  max-height: 70vh;
+  border-radius: 12px;
 }
 .preview-text {
   padding: 1.5rem;

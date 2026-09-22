@@ -14,8 +14,8 @@ import { useVaultAccess } from "./hooks/useVaultAccess";
 import { useVaultTracker } from "./hooks/useVaultTracker";
 import {
   VaultDocumentCard,
-  VaultPinGate,
   VaultPreviewModal,
+  SitePinGate,
 } from "./components/VaultParts";
 
 const decisions = [
@@ -209,6 +209,14 @@ export default function Workspace({
   );
   const navItems = [...contentModules, { id: "vault", title: "Data vault" }, { id: "decisions", title: "Decisions" }];
 
+  if (access.authorized !== true) {
+    return (
+      <div className="site">
+        {access.authorized === false && <SitePinGate access={access} />}
+      </div>
+    );
+  }
+
   return (
     <div className="site">
       <a className="skip-link" href="#hero">
@@ -374,9 +382,6 @@ export default function Workspace({
               </button>
             ))}
           </div>
-          {access.authorized === false && (
-            <VaultPinGate access={access} onUnlocked={() => access.refresh()} />
-          )}
           <div className="vault-grid">
             {filteredDocs.map(doc => (
               <VaultDocumentCard

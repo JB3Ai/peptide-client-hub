@@ -2,11 +2,12 @@ import {
   VAULT_COOKIE,
   isVaultSessionValid,
   parseCookie,
+  resolvePinSecret,
 } from "../../shared/vaultAuth.ts";
 import type { Context } from "https://edge.netlify.com";
 
 export default async (request: Request, context: Context) => {
-  const secret = Deno.env.get("VAULT_PIN_SECRET") ?? "";
+  const secret = resolvePinSecret(Deno.env.get("VAULT_PIN_SECRET"));
   const token = parseCookie(request.headers.get("cookie"), VAULT_COOKIE);
   const authorized = await isVaultSessionValid(token, secret);
   if (authorized) return context.next();
