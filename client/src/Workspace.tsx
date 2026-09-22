@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
   ClipboardCheck,
+  Download,
   Lock,
   LockOpen,
   Menu,
@@ -291,7 +292,7 @@ export default function Workspace({
           </div>
         </section>
 
-        {contentModules.map(module => {
+        {contentModules.map((module, index) => {
           const Icon = module.icon;
           const roomDocs = documents.filter(doc => doc.room === module.title);
           return (
@@ -299,51 +300,96 @@ export default function Workspace({
               id={module.id}
               key={module.id}
               ref={el => { sectionRefs.current[module.id] = el; }}
-              className="workstream-section"
+              className={`workstream-section accent-${module.accent} ${index % 2 === 1 ? "is-alt" : ""}`}
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-15% 0px" }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              <div className="workstream-heading">
-                <span className="eyebrow">
-                  {module.section} · {module.status}
-                </span>
-                <h2>
-                  <Icon size={26} /> {module.title}
-                </h2>
-                <p>{module.description}</p>
+              <span className="workstream-watermark" aria-hidden="true">
+                {module.section}
+              </span>
+              <div className="workstream-top">
+                <div className="workstream-heading">
+                  <span className="eyebrow">
+                    {module.section} · {module.status}
+                  </span>
+                  <h2>{module.title}</h2>
+                  <p>{module.description}</p>
+                </div>
+                <motion.div
+                  className="workstream-badge"
+                  initial={{ opacity: 0, scale: 0.8, rotate: -6 }}
+                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                >
+                  <Icon size={34} />
+                </motion.div>
               </div>
-              <ul className="workstream-outline">
-                {module.bullets.map(bullet => (
-                  <li key={bullet}>{bullet}</li>
+
+              <div className="workstream-content">
+                {module.content.map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
                 ))}
-              </ul>
-              {roomDocs.length > 0 && (
-                <div className="workstream-files">
-                  <div className="workstream-files-head">
-                    <span>
-                      {roomDocs.length} source {roomDocs.length === 1 ? "file" : "files"}
-                    </span>
-                    <button className="text-link" onClick={() => openVaultRoom(module.title)}>
-                      View in vault <ArrowRight size={15} />
+              </div>
+
+              <motion.ul
+                className="workstream-outline"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-10% 0px" }}
+                variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+              >
+                {module.bullets.map(bullet => (
+                  <motion.li
+                    key={bullet}
+                    variants={{
+                      hidden: { opacity: 0, x: -12 },
+                      visible: { opacity: 1, x: 0 },
+                    }}
+                    transition={{ duration: 0.35 }}
+                  >
+                    {bullet}
+                  </motion.li>
+                ))}
+              </motion.ul>
+
+              <div className="workstream-footer">
+                {roomDocs.length > 0 ? (
+                  <div className="workstream-files">
+                    <div className="workstream-files-head">
+                      <span>
+                        {roomDocs.length} source {roomDocs.length === 1 ? "file" : "files"} for{" "}
+                        {module.title.toLowerCase()}
+                      </span>
+                      <button className="text-link" onClick={() => openVaultRoom(module.title)}>
+                        View all in vault <ArrowRight size={15} />
+                      </button>
+                    </div>
+                    <div className="mini-doc-grid">
+                      {roomDocs.slice(0, 3).map(doc => (
+                        <button key={doc.id} className="mini-doc" onClick={() => openVaultRoom(module.title)}>
+                          <strong>{doc.name}</strong>
+                          <span>
+                            {doc.type} · {doc.size}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <button className="btn btn-primary workstream-download" onClick={() => openVaultRoom(module.title)}>
+                      <Download size={15} /> Download the {module.title.toLowerCase()} files
                     </button>
                   </div>
-                  <div className="mini-doc-grid">
-                    {roomDocs.slice(0, 3).map(doc => (
-                      <button key={doc.id} className="mini-doc" onClick={() => openVaultRoom(module.title)}>
-                        <strong>{doc.name}</strong>
-                        <span>
-                          {doc.type} · {doc.size}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <button className="text-link" onClick={() => openBrief(true)}>
-                Add a question about this workstream <ArrowRight size={15} />
-              </button>
+                ) : (
+                  <button className="text-link" onClick={() => scrollToId("vault")}>
+                    Open the vault <ArrowRight size={15} />
+                  </button>
+                )}
+                <button className="text-link" onClick={() => openBrief(true)}>
+                  Add a question about this workstream <ArrowRight size={15} />
+                </button>
+              </div>
             </motion.section>
           );
         })}

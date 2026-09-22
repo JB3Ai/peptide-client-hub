@@ -13,6 +13,9 @@
   --brass: #b4863a;
   --brass-soft: #f1e3c4;
   --coral: #c9685d;
+  --coral-soft: #f7e3e0;
+  --blue: #3c6690;
+  --blue-soft: #e4ecf3;
   --muted: #5c6a63;
   --line: #e2ddcd;
   --shadow: 0 20px 45px -25px rgba(9, 60, 49, 0.35);
@@ -304,18 +307,97 @@ main {
 .workstream-section,
 .vault-section,
 .decisions-section {
-  padding: 3.2rem 0;
+  padding: 3.6rem 0;
   border-top: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.workstream-section.accent-emerald {
+  --accent: var(--emerald);
+  --accent-soft: var(--emerald-soft);
+}
+.workstream-section.accent-brass {
+  --accent: var(--brass);
+  --accent-soft: var(--brass-soft);
+}
+.workstream-section.accent-coral {
+  --accent: var(--coral);
+  --accent-soft: var(--coral-soft);
+}
+.workstream-section.accent-blue {
+  --accent: var(--blue);
+  --accent-soft: var(--blue-soft);
+}
+.workstream-section.is-alt {
+  background: linear-gradient(180deg, var(--accent-soft) 0%, rgba(250, 247, 238, 0) 55%);
+}
+.workstream-section::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, rgba(250, 247, 238, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.workstream-watermark {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(4.5rem, 12vw, 8rem);
+  font-weight: 600;
+  color: var(--accent, var(--brass));
+  opacity: 0.08;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+}
+.workstream-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.workstream-badge {
+  flex-shrink: 0;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent, var(--brass)), var(--deep-emerald));
+  color: var(--ivory);
+  box-shadow: 0 14px 30px -14px var(--accent, var(--brass));
+  animation: workstream-float 5s ease-in-out infinite;
+}
+@keyframes workstream-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workstream-badge {
+    animation: none;
+  }
 }
 
+.workstream-heading {
+  position: relative;
+  z-index: 1;
+}
 .workstream-heading h2 {
   font-size: clamp(1.6rem, 3vw, 2.2rem);
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-.workstream-heading svg {
-  color: var(--brass);
 }
 .workstream-heading p {
   color: var(--muted);
@@ -323,8 +405,24 @@ main {
   margin: 0.9rem 0 0;
 }
 
+.workstream-content {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.4rem;
+  max-width: 680px;
+  display: grid;
+  gap: 0.9rem;
+}
+.workstream-content p {
+  color: var(--ink);
+  line-height: 1.7;
+  margin: 0;
+}
+
 .workstream-outline {
-  margin: 1.6rem 0;
+  position: relative;
+  z-index: 1;
+  margin: 1.8rem 0;
   padding: 0;
   list-style: none;
   display: grid;
@@ -343,11 +441,18 @@ main {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--brass);
+  background: var(--accent, var(--brass));
+}
+
+.workstream-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.8rem;
+  display: grid;
+  gap: 0.9rem;
 }
 
 .workstream-files {
-  margin-top: 1.6rem;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -357,9 +462,16 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
   font-size: 0.85rem;
   color: var(--muted);
   margin-bottom: 0.9rem;
+}
+.workstream-download {
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
 }
 .mini-doc-grid {
   display: grid;
@@ -376,9 +488,13 @@ main {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease;
 }
 .mini-doc:hover {
-  border-color: var(--emerald);
+  border-color: var(--accent, var(--emerald));
+  transform: translateY(-2px);
 }
 .mini-doc strong {
   font-size: 0.88rem;
@@ -940,6 +1056,13 @@ main {
     flex-direction: column;
     gap: 0.6rem;
     align-items: flex-start;
+  }
+  .workstream-top {
+    flex-direction: column-reverse;
+    gap: 0.9rem;
+  }
+  .workstream-watermark {
+    display: none;
   }
 }
 
